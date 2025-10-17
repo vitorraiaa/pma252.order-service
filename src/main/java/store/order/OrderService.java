@@ -38,7 +38,7 @@ public class OrderService {
     public Order create(Order order) {
         order.date(new Date());
 
-
+        // Preço para cada item (evita NPE e reuso no total)
         if (order.items() != null) {
             for (OrderItem i : order.items()) {
                 i.price(fetchPrice(i.productId()));
@@ -46,7 +46,6 @@ public class OrderService {
         }
 
         order.total(calculateTotal(order.items()));
-
 
         OrderModel saved = orderRepository.save(new OrderModel(order));
         return saved.to();
@@ -60,10 +59,12 @@ public class OrderService {
         if (existing == null) return null;
 
         existing.date(new Date());
-        existing.total(calculateTotal(order.items()));
 
+        // Recria itens com preços atualizados e então calcula total
         existing.items().clear();
         persistItems(order.items(), existing);
+        double total = existing.items().stream().mapToDouble(OrderItemModel::total).sum();
+        existing.total(total);
 
         orderRepository.save(existing);
         return existing.to();
@@ -79,21 +80,29 @@ public class OrderService {
         if (items == null) return;
 
         for (OrderItem i : items) {
-            i.price(fetchPrice(i.productId()));      
+            // garante preço
+            double price = fetchPrice(i.productId());
+            i.price(price);
+
             OrderItemModel im = new OrderItemModel(i, order);
             order.items().add(im);
         }
     }
 
-    private Double calculateTotal(List<OrderItem> items) {
+    private double calculateTotal(List<OrderItem> items) {
         if (items == null) return 0.0;
         return items.stream()
-                    .mapToDouble(i -> fetchPrice(i.productId()) * i.quantity())
+                    .mapToDouble(i -> {
+                        int q = (i.quantity() == null) ? 0 : i.quantity();
+                        double p = (i.price() != null) ? i.price() : fetchPrice(i.productId());
+                        return p * q;
+                    })
                     .sum();
     }
 
-    private Double fetchPrice(String productId) {
+    private double fetchPrice(String productId) {
         ProductOut product = productController.findById(productId).getBody();
-        return product != null ? product.price() : 0.0;
+        Double price = (product == null || product.price() == null) ? 0.0 : product.price();
+        return price;
     }
 }

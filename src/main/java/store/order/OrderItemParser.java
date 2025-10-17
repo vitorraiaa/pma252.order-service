@@ -15,12 +15,14 @@ public final class OrderItemParser {
     }
 
     public static OrderItemOut to(OrderItem i) {
-        return i == null ? null :
-            OrderItemOut.builder()
+        if (i == null) return null;
+        int qty = (i.quantity() == null) ? 0 : i.quantity();
+        double price = (i.price() == null) ? 0.0 : i.price();
+        return OrderItemOut.builder()
                 .id(i.id())
                 .product(ProductOut.builder().id(i.productId()).build())
                 .quantity(i.quantity())
-                .total(i.price() * i.quantity())
+                .total(price * qty)
                 .build();
     }
 }

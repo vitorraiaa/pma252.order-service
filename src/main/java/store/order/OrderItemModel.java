@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-@Entity(name = "OrderItem") 
-@Table(name = "item", schema = "orders")
+@Entity(name = "OrderItem")
+@Table(name = "item", schema = "orders") // <- alinhado com Flyway
 @Getter
 @Setter
 @NoArgsConstructor
@@ -39,7 +39,6 @@ public class OrderItemModel {
     @ToString.Exclude
     private OrderModel order;
 
-
     public OrderItemModel(OrderItem source, OrderModel order) {
         this.idItem = source.id();
         this.idProduct = source.productId();
@@ -52,7 +51,6 @@ public class OrderItemModel {
         return new OrderItemModel(source, order);
     }
 
-
     public OrderItem to() {
         return OrderItem.builder()
             .id(idItem)
@@ -62,10 +60,9 @@ public class OrderItemModel {
             .build();
     }
 
-
     public double total() {
-        double q = quantity == null ? 0 : quantity;
-        double p = itemPrice == null ? 0 : itemPrice;
+        int q = (quantity == null) ? 0 : quantity;
+        double p = (itemPrice == null) ? 0.0 : itemPrice;
         return q * p;
     }
 }
