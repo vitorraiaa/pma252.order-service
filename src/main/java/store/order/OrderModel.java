@@ -7,7 +7,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 @Entity
-@Table(name = "orders", schema = "store_order")
+@Table(name = "orders", schema = "orders")
 @Getter
 @Setter
 @NoArgsConstructor
