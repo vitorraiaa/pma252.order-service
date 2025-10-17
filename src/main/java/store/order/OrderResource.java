@@ -20,10 +20,6 @@ public final class OrderResource {
             @RequestHeader(name = "id-account", required = false) String idAccount) {
 
         String uid = userId != null ? userId : idAccount;
-        if (uid == null || uid.isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
-
         Order created = service.create(OrderParser.to(in, uid));
         return ResponseEntity.ok(OrderParser.to(created));
     }
@@ -65,9 +61,6 @@ public final class OrderResource {
             @RequestHeader(name = "id-account", required = false) String idAccount) {
 
         String uid = userId != null ? userId : idAccount;
-        if (uid == null || uid.isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
 
         Order updated = service.update(OrderParser.to(in, uid).id(id));
         return (updated == null)

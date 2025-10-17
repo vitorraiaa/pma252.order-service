@@ -1,3 +1,4 @@
+
 package store.order;
 
 import jakarta.persistence.*;
@@ -7,7 +8,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 @Entity
-@Table(name = "orders", schema = "orders") // <- alinhado com Flyway
+@Table(name = "orders", schema = "store_order")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,6 +39,7 @@ public class OrderModel {
     @ToString.Exclude
     private List<OrderItemModel> items = new ArrayList<>();
 
+    /** Construtor de mapeamento (lógica inalterada) */
     public OrderModel(Order source) {
         this.idOrder = source.id();
         this.idUser  = source.idUser();
@@ -50,14 +52,18 @@ public class OrderModel {
         }
     }
 
+    /** Factory opcional (variação sem impacto na lógica) */
     public static OrderModel of(Order source) {
         return new OrderModel(source);
     }
 
+    /** Mapper reverso para domínio (lógica inalterada) */
     public Order to() {
         List<OrderItem> domainItems = (items == null)
                 ? new ArrayList<>()
-                : items.stream().map(OrderItemModel::to).collect(Collectors.toList());
+                : items.stream()
+                       .map(OrderItemModel::to)
+                       .collect(Collectors.toList());
 
         return Order.builder()
                 .id(idOrder)
