@@ -52,12 +52,11 @@ public class OrderModel {
         }
     }
 
-    /** Factory opcional (variação sem impacto na lógica) */
+
     public static OrderModel of(Order source) {
         return new OrderModel(source);
     }
 
-    /** Mapper reverso para domínio (lógica inalterada) */
     public Order to() {
         List<OrderItem> domainItems = (items == null)
                 ? new ArrayList<>()

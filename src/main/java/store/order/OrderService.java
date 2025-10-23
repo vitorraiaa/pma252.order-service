@@ -38,7 +38,7 @@ public class OrderService {
     public Order create(Order order) {
         order.date(new Date());
 
-        // ensure each item has its price populated before we create the OrderModel
+
         if (order.items() != null) {
             for (OrderItem i : order.items()) {
                 i.price(fetchPrice(i.productId()));
@@ -47,7 +47,7 @@ public class OrderService {
 
         order.total(calculateTotal(order.items()));
 
-        // now create and persist the model in a single save (items already have prices)
+
         OrderModel saved = orderRepository.save(new OrderModel(order));
         return saved.to();
     }
@@ -75,13 +75,13 @@ public class OrderService {
         if (existing != null) orderRepository.delete(existing);
     }
 
-    /* ---------- helpers (lógica inalterada) ---------- */
+
 
     private void persistItems(List<OrderItem> items, OrderModel order) {
         if (items == null) return;
 
         for (OrderItem i : items) {
-            i.price(fetchPrice(i.productId()));          // mantém atribuição no DTO
+            i.price(fetchPrice(i.productId()));        
             OrderItemModel im = new OrderItemModel(i, order);
             order.items().add(im);
         }
